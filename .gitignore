@@ -39,3 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database backups (sensitive data)
+/backups
+
+# migration temporary files
+/temp-migration
+
+# logs
+*.log
+*.txt
+
+# test and verification scripts
+test-*.js
+verify-*.ts
+
+# prisma studio
+.prisma
