@@ -22,7 +22,7 @@ export function Footer() {
         <div className="py-12">
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Company Info + Stay Connected */}
-            <div className="lg:col-span-4 flex flex-col justify-center text-left min-h-full">
+            <div className="lg:col-span-4 flex flex-col justify-start text-left min-h-full">
               <div className="mb-6">
                 <div className="text-3xl font-bold">ICCD</div>
                 <div className="text-xs text-primary-foreground/80">

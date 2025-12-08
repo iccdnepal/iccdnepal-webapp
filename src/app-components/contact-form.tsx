@@ -109,13 +109,13 @@ export function ContactForm() {
                   <li className="flex gap-3">
                     <Phone className="h-5 w-5 mt-0.5 opacity-90" />
                     <div>
-                      <p>+1 (555) 123-4567</p>
-                      <p>+44 20 7123 4567</p>
+                      <p>+977 9700013707</p>
+                      
                     </div>
                   </li>
                   <li className="flex gap-3">
                     <Clock className="h-5 w-5 mt-0.5 opacity-90" />
-                    <p>Mon–Fri: 9:00–17:00 (NPT)</p>
+                    <p>Sun-Fri: 09:00-17:00 (NPT)</p>
                   </li>
                 </ul>
               </div>
