@@ -13,7 +13,8 @@ export const authConfig = {
             if (isOnAdmin) {
                 if (isLoggedIn) {
                     if (isLoginPage) {
-                        return Response.redirect(new URL('/admin/dashboard', nextUrl));
+                        // Let NextAuth handle redirect to dashboard
+                        return false;
                     }
                     return true;
                 }
