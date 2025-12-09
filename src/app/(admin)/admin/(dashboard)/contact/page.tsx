@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app-components/ui/card"
 import { Badge } from "@/app-components/ui/badge"
 import { format } from "date-fns"
+import { ReplyModal } from "@/app-components/admin/reply-modal"
 
 const prisma = new PrismaClient()
 
@@ -23,6 +24,11 @@ export default async function ContactPage() {
                                 <p className="text-sm text-muted-foreground">{msg.email}</p>
                             </div>
                             <div className="flex flex-col items-end gap-2">
+                                <ReplyModal
+                                    emailTo={msg.email}
+                                    subject={`Re: ${msg.interest || "Contact Inquiry"}`}
+                                    originalContext={`Contact message from ${msg.name} on ${format(msg.createdAt, 'PPP')}: ${msg.message}`}
+                                />
                                 <Badge variant="outline">{msg.interest}</Badge>
                                 <span className="text-xs text-muted-foreground">{format(msg.createdAt, 'PPP')}</span>
                             </div>

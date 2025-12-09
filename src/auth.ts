@@ -28,6 +28,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
+
+                    // Security: Restrict login to specific admin email
+                    const allowedEmails = ['admin@iccdnepal.com'];
+                    if (!allowedEmails.includes(email)) {
+                        console.log('Access denied: Unauthorized email');
+                        return null;
+                    }
+
                     const user = await getUser(email);
                     if (!user) return null;
                     const passwordsMatch = await bcrypt.compare(password, user.password);

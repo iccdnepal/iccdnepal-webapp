@@ -1,8 +1,9 @@
 import Link from "next/link"
-import { LayoutDashboard, BookOpen, MessageSquare, Mail, LogOut, Users, BarChart, FileText, HelpCircle, Image as ImageIcon } from "lucide-react"
+import { LayoutDashboard, BookOpen, MessageSquare, Mail, LogOut, Users, BarChart, FileText, HelpCircle, Image as ImageIcon, KeyRound } from "lucide-react"
 import { SignOutButton } from "@/app-components/admin/sign-out-button"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Notifications } from "@/app-components/admin/notifications"
 
 export default function AdminLayout({
     children,
@@ -54,7 +55,11 @@ export default function AdminLayout({
                         <HelpCircle className="w-5 h-5" />
                         Contact Messages
                     </Link>
-                    
+                    <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors">
+                        <KeyRound className="w-5 h-5" />
+                        Settings
+                    </Link>
+
                 </nav>
 
                 <div className="p-4 border-t border-border">
@@ -62,11 +67,21 @@ export default function AdminLayout({
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-8 bg-background">
-                {children}
-                <ToastContainer theme="dark" position="bottom-right" />
-            </main>
+            {/* Main Content Wrapper */}
+            <div className="flex-1 flex flex-col min-w-0 bg-background">
+                {/* Header */}
+                <header className="h-16 border-b border-border flex items-center justify-between px-8 bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+                    <h2 className="font-semibold text-lg text-foreground">Overview</h2>
+                    <div className="flex items-center gap-4">
+                        <Notifications />
+                    </div>
+                </header>
+
+                <main className="flex-1 overflow-y-auto p-8">
+                    {children}
+                    <ToastContainer theme="dark" position="bottom-right" />
+                </main>
+            </div>
         </div>
     )
 }

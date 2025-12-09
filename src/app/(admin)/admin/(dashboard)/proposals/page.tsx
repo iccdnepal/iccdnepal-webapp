@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app-components/ui/card"
 import { format } from "date-fns"
 import StatusSelect from "./status-select"
+import { ReplyModal } from "@/app-components/admin/reply-modal"
 
 const prisma = new PrismaClient()
 
@@ -34,7 +35,14 @@ export default async function ProposalsPage() {
                                 </div>
                             </div>
                             <div className="flex flex-col items-end gap-2">
-                                <StatusSelect id={proposal.id} currentStatus={proposal.status} />
+                                <div className="flex items-center gap-2">
+                                    <StatusSelect id={proposal.id} currentStatus={proposal.status} />
+                                    <ReplyModal
+                                        emailTo={proposal.email}
+                                        subject={`Proposal for ${proposal.institutionName}`}
+                                        originalContext={`Proposal from ${proposal.name} (${proposal.institutionName}) on ${format(proposal.createdAt, 'PPP')}`}
+                                    />
+                                </div>
                                 <span className="text-xs text-muted-foreground">{format(proposal.createdAt, 'PPP p')}</span>
                             </div>
                         </CardHeader>

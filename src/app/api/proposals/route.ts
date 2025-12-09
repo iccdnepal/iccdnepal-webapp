@@ -53,6 +53,7 @@ export async function POST(req: Request) {
                 await transporter.sendMail({
                     from: process.env.EMAIL_USER,
                     to: body.email,
+                    bcc: "admin@iccdnepal.com", // Also notify admin
                     subject: "We received your training proposal request - ICCD",
                     html: `
                         <div style="font-family: sans-serif; color: #333;">
