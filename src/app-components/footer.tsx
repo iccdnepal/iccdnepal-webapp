@@ -28,7 +28,7 @@ export function Footer() {
                 <div className="text-xs text-primary-foreground/80">
                   International Center for Capacity<br /> Development Pvt. Ltd.
                 </div>
-                <Link href="https://www.linkedin.com/company/iccd-nepal/" target="_blank" className="text-white hover:text-secondary transition-colors text-sm">
+                <Link href="https://www.linkedin.com/company/international-center-for-capacity-development-iccd/" target="_blank" className="text-white hover:text-secondary transition-colors text-sm">
                   <Linkedin className="h-5 w-5 mt-5" />
                 </Link>
               </div>

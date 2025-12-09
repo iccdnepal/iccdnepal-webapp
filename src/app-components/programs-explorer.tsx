@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState, type ComponentType, type SVGProps, type KeyboardEvent, useEffect } from 'react'
+import { useMemo, useRef, useState, type ComponentType, type SVGProps, type KeyboardEvent, useEffect, lazy, Suspense } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/app-components/ui/button'
@@ -26,7 +26,9 @@ import {
     X,
     Bookmark,
     Wallet,
+    type LucideIcon,
 } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import type { Program } from '../lib/programs'
 import {
     Card,
@@ -39,8 +41,8 @@ import { CTAStrip } from './cta-strip'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
-function iconForProgram(category: string, i: number): IconType {
-    const byCategory: Record<string, IconType> = {
+function iconForProgram(category: string, i: number): LucideIcon {
+    const byCategory: Record<string, LucideIcon> = {
         'ESG & Sustainability': Leaf,
         'Risk & Compliance': ShieldCheck,
         'Fraud & Forensics': BarChart3,
@@ -48,8 +50,33 @@ function iconForProgram(category: string, i: number): IconType {
         Global: Globe2,
         'Risk & Finance': Building2,
     }
-    const fallbacks: IconType[] = [Leaf, ShieldCheck, BarChart3, GraduationCap, Globe2, Building2]
+    const fallbacks: LucideIcon[] = [Leaf, ShieldCheck, BarChart3, GraduationCap, Globe2, Building2]
     return byCategory[category] ?? fallbacks[i % fallbacks.length]
+}
+
+// Dynamic Icon Component with fallback
+function DynamicIcon({ iconName, className, fallback }: { iconName?: string | null, className?: string, fallback?: LucideIcon | ComponentType<SVGProps<SVGSVGElement>> }) {
+    // Try to load icon synchronously first
+    const getIcon = (): LucideIcon | ComponentType<SVGProps<SVGSVGElement>> => {
+        if (!iconName) {
+            return fallback || Bookmark
+        }
+
+        try {
+            // @ts-ignore - Dynamic icon loading
+            const icon = LucideIcons[iconName as keyof typeof LucideIcons]
+            if (icon && typeof icon === 'function') {
+                return icon as LucideIcon
+            }
+        } catch (error) {
+            console.warn(`Failed to load icon: ${iconName}`, error)
+        }
+
+        return fallback || Bookmark
+    }
+
+    const IconComponent = getIcon()
+    return <IconComponent className={className} />
 }
 
 // Helper to map Program to View Model
@@ -256,7 +283,7 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                             onClick={() => setIsNavExpanded(!isNavExpanded)}
                                             className="h-12 w-12 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
                                         >
-                                            {isNavExpanded ? <X className="w-5 h-5" /> : <div className="flex flex-col items-center gap-0.5"><Wallet className="w-5 h-5" /></div>}
+                                            {isNavExpanded ? <X className="w-5 h-5" /> : <DynamicIcon iconName={current.images.icon} className="w-5 h-5" fallback={iconForProgram(current.category, index)} />}
                                         </button>
                                     </motion.div>
                                 )}
@@ -289,11 +316,17 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                                         role="tab"
                                                         aria-selected={active}
                                                         onClick={() => setIndex(i)}
-                                                        className={`group relative flex items-center justify-end gap-3 w-full transition-all outline-none py-2 px-2 rounded-lg
+                                                        className={`group relative flex items-center justify-between gap-3 w-full transition-all outline-none py-2 px-3 rounded-lg
                                                         ${active ? 'bg-white/5' : 'hover:bg-white/5'}
                                                     `}
                                                     >
-                                                        <span className={`text-right text-sm lg:text-base font-medium transition-colors duration-300
+                                                        {/* Program Icon */}
+                                                        <div className={`p-1.5 rounded-lg transition-colors ${active ? 'bg-secondary/20 text-secondary' : 'bg-white/5 text-slate-400'
+                                                            }`}>
+                                                            <DynamicIcon iconName={p.images.icon} className="w-4 h-4" fallback={iconForProgram(p.category, i)} />
+                                                        </div>
+
+                                                        <span className={`flex-1 text-right text-sm lg:text-base font-medium transition-colors duration-300
                                                         ${active ? 'text-white' : 'text-slate-300'}
                                                     `}>
                                                             {p.title}
