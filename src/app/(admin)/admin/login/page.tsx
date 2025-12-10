@@ -4,7 +4,8 @@ import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { Button } from '@/app-components/ui/button';
 import { Input } from '@/app-components/ui/input';
-import { Loader2 } from 'lucide-react';
+import {Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
 
 export default function LoginPage() {
@@ -17,7 +18,7 @@ export default function LoginPage() {
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
             {/* Left Side - Logo/Brand */}
             <div className="flex flex-col items-center justify-center bg-primary/5 p-10">
-                <div className="relative mb-8 h-32 w-48">
+                <div className="relative mb-8 h-40 w-40 object-contain">
                     <Image
                         src="/Images/Logo/1.png"
                         alt="ICCD Logo"
@@ -53,7 +54,7 @@ export default function LoginPage() {
                                 id="email"
                                 type="email"
                                 name="email"
-                                placeholder="admin@iccd.com"
+                                placeholder="Enter Your Email"
                                 required
                                 className="bg-background"
                             />
@@ -73,7 +74,11 @@ export default function LoginPage() {
                                 className="bg-background"
                             />
                         </div>
-
+                        <div className="flex items-center justify-between">
+                            <Link href="/admin/forgot-password" className="text-sm text-primary hover:underline">
+                                Forgot Password?
+                            </Link>
+                        </div>
                         <div
                             className="flex h-8 items-end space-x-1"
                             aria-live="polite"
