@@ -1,5 +1,5 @@
 'use client'
-
+import Script from 'next/script'
 import { useMemo, useRef, useState, type ComponentType, type SVGProps, type KeyboardEvent, useEffect, lazy, Suspense } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -37,6 +37,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/app-components/ui/card"
+
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -196,8 +197,32 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
 
     if (!current || !view) return null
 
+    const jsonLdPrograms = programs.map(p => ({
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": p.title,
+        "description": p.summary,
+        "provider": {
+            "@type": "Organization",
+            "name": "ICCD Nepal",
+            "sameAs": "https://iccdnepal.com"
+        },
+        "courseCode": p.slug,
+        "educationalCredentialAwarded": p.certification || undefined,
+        "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": p.format,
+            "maximumAttendeeCapacity": p.maxParticipants,
+            "duration": p.durationDays ? `${p.durationDays} days` : undefined
+        }
+    }))
+
     return (
         <>
+        {/* JSON-LD for all programs */}
+            <Script type="application/ld+json" id="programs-jsonld">
+            {JSON.stringify(jsonLdPrograms)}
+            </Script>
             <div className="w-full min-h-screen bg-background flex flex-col">
 
                 {/* HEADER SECTION */}
