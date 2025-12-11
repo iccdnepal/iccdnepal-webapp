@@ -43,37 +43,37 @@ export function LegalDocumentList({ initialDocs }: { initialDocs: LegalDocument[
         <div className="space-y-8">
             {/* Search and Filter */}
             {/* Search + Filters (Responsive) */}
-<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
-    {/* Filters — scrollable on mobile */}
-    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar md:flex-wrap md:overflow-visible">
-        {types.map((type) => (
-            <button
-                key={type}
-                onClick={() => setFilter(type)}
-                className={cn(
-                    "whitespace-nowrap px-4 py-2 rounded-none text-sm font-medium transition-all duration-300",
-                    filter === type
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
-                        : "bg-none border border-primary text-primary hover:bg-primary hover:text-white cursor-pointer hover:scale-105"
-                )}
-            >
-                {pluralize(type)}
-            </button>
-        ))}
-    </div>
+                {/* Filters — scrollable on mobile */}
+                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar md:flex-wrap md:overflow-visible">
+                    {types.map((type) => (
+                        <button
+                            key={type}
+                            onClick={() => setFilter(type)}
+                            className={cn(
+                                "whitespace-nowrap px-4 py-2 rounded-none text-sm font-medium transition-all duration-300",
+                                filter === type
+                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                                    : "bg-none border border-primary text-primary hover:bg-primary hover:text-white cursor-pointer hover:scale-105"
+                            )}
+                        >
+                            {pluralize(type)}
+                        </button>
+                    ))}
+                </div>
 
-    {/* Search bar */}
-    <div className="relative w-full md:w-80 lg:w-96">
-        <Search className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground" />
-        <Input
-            placeholder="Search documents..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-10 bg-background/50 border-primary/40 focus-visible:ring-primary/50"
-        />
-    </div>
-</div>
+                {/* Search bar */}
+                <div className="relative w-full md:w-80 lg:w-130">
+                    <Search className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground" />
+                    <Input
+                        placeholder="Search documents..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-8 h-10 bg-background/50 border-primary/40 focus-visible:ring-primary/50"
+                    />
+                </div>
+            </div>
 
 
             {/* Document Grid */}

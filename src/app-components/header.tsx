@@ -21,7 +21,6 @@ export function Header() {
       if (currentScrollY < 10) {
         setIsVisible(true)
       } else if (Math.abs(currentScrollY - lastScrollY) > 10) {
-        // Only update if scroll difference is significant
         if (currentScrollY < lastScrollY) {
           setIsVisible(true)
         } else {
@@ -37,66 +36,68 @@ export function Header() {
   }, [lastScrollY])
 
   const navigation = [
-    // { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
     { name: "Programs", href: "/programs" },
-    // { name: "Why Choose ICCD", href: "/why-choose" },
-    // { name: "Events", href: "/events" },
     { name: "Impact", href: "/impact" },
-    // { name: "Blog", href: "/blog" },
     { name: "Legal", href: "/legal" },
     { name: "Contact", href: "/contact" },
   ]
 
   return (
     <header
-      className={`bg-background border-b border-border sticky top-0 z-50 shadow-md transition-transform duration-500 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-full"
-        }`}
+      className={`bg-background border-b border-border sticky top-0 z-50 shadow-md transition-transform duration-500 ease-in-out ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <div className="w-40 h-30 bg-none rounded-lg flex items-center">
+              <div className="w-40 h-30 flex items-center">
                 <Image
-                  src="/Images/Logo/1.png" // update with your logo path
+                  src="/Images/Logo/1.png"
                   alt="ICCD Logo"
                   width={100}
                   height={100}
                   className="object-contain"
                 />
               </div>
-              {/* <div className="ml">
-                <div className="text-xl font-bold text-primary">ICCD</div>
-                <div className="text-xs text-muted-foreground">International Centre for Compliance & Development</div>
-              </div> */}
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Desktop + Tablet Navigation */}
+          <nav className="hidden md:flex space-x-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`${pathname === item.href ? "text-secondary" : "text-foreground"} hover:text-secondary transition-colors duration-200 font-medium`}
+                className={`${
+                  pathname === item.href ? "text-secondary" : "text-foreground"
+                } hover:text-secondary transition-colors duration-200 font-medium text-sm md:text-base`}
               >
                 {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* CTA Button */}
+          {/* Desktop + Tablet CTA Button */}
           <div className="hidden md:flex">
             <Link href="/request-proposal">
-              <Button className="bg-secondary/20 border-secondary/40 hover:bg-secondary text-white cursor-pointer rounded-full">REQUEST PROPOSAL</Button>
+              <Button className="bg-secondary/20 border-secondary/40 hover:bg-secondary text-white cursor-pointer rounded-full text-sm md:text-base px-4 md:px-6 py-2">
+                REQUEST PROPOSAL
+              </Button>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile Hamburger Menu */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)} className="cursor-pointer hover:bg-secondary hover:text-white">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="cursor-pointer hover:bg-secondary hover:text-white"
+            >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
@@ -110,7 +111,9 @@ export function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`block px-3 py-2 ${pathname === item.href ? "text-secondary" : "text-foreground"} hover:text-secondary transition-colors duration-200`}
+                  className={`block px-3 py-2 ${
+                    pathname === item.href ? "text-secondary" : "text-foreground"
+                  } hover:text-secondary transition-colors duration-200`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
@@ -118,7 +121,9 @@ export function Header() {
               ))}
               <div className="px-3 py-2">
                 <Link href="/request-proposal" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-secondary/20 border-secondary/40 hover:bg-secondary text-white cursor-pointer"> REQUEST PROPOSAL</Button>
+                  <Button className="w-full bg-secondary/20 border-secondary/40 hover:bg-secondary text-white cursor-pointer rounded-full">
+                    REQUEST PROPOSAL
+                  </Button>
                 </Link>
               </div>
             </div>
