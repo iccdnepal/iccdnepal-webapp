@@ -179,7 +179,7 @@ export function MissionVision() {
                     >
                       <Badge
                         variant="secondary"
-                        className="bg-emerald-50 text-emerald-700 border border-emerald-100 w-fit"
+                        className="bg-emerald-50 text-emerald-700 border border-emerald-100 w-fit rounded-full"
                       >
                         {current.kicker}
                       </Badge>

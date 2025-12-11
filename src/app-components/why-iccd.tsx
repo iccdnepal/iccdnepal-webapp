@@ -50,7 +50,7 @@ export default function WhyICCD_Toggle() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 lg:py-4">
         {/* Title on top */}
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">
+          <h2 className="text-4xl lg:text-5xl lg:text-center font-extrabold mb-6 leading-tight text-white md:text-left text-left">
             Why <span className="text-white">ICCD</span>
           </h2>
 

@@ -17,7 +17,7 @@ export function AboutHero() {
           <Badge className="mb-6 bg-white/10 text-white border-white/20 rounded-full">
             About ICCD
           </Badge>
-          <h1 className="text-4xl lg:text-6xl font-bold text-balance leading-tight mb-6 text-white">
+          <h1 className="text-4xl lg:text-6xl md:text-3xl font-bold text-balance leading-tight mb-6 text-white">
             Unveiling <span className="text-white">Our Identity,</span> {" "}
             <span className="text-white">Vision & </span> Values
             

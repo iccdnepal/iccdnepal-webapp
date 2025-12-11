@@ -1,10 +1,14 @@
 "use client"
 
-import { GalleryImage } from "@prisma/client"
-import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
+
+type GalleryImage = {
+    id: string
+    imageUrl: string
+}
 
 export function ImgGallery({ images }: { images: GalleryImage[] }) {
     const [index, setIndex] = useState(0)
@@ -70,17 +74,17 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
     }
 
     return (
-        <section className="py-24 bg-background overflow-hidden">
+        <section className="py-12 md:py-16 lg:py-24 bg-background overflow-hidden">
 
             {/* Title and Navigation */}
-            <div className="flex justify-between items-center mb-12 w-[90%] max-w-6xl mx-auto">
-                <h2 className="text-4xl lg:text-5xl font-bold text-white text-center">Our Canvas</h2>
+            <div className="flex justify-between items-center mb-8 md:mb-12 w-[90%] max-w-6xl mx-auto px-4 md:px-0">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white text-left lg:text-center">Our Canvas</h2>
 
                 {/* Navigation Arrows */}
                 <div className="flex gap-3">
                     <button
                         onClick={next}
-                        className="w-12 h-12 rounded-full bg-secondary/20 border border-secondary/30 flex items-center justify-center hover:bg-gradient-to-br from-secondary/80 to-secondary  transition-all duration-300 cursor-pointer"
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary/20 border border-secondary/30 flex items-center justify-center hover:bg-gradient-to-br from-secondary/80 to-secondary  transition-all duration-300 cursor-pointer"
                     >
                         <ArrowRight className="w-4 h-4 text-white" />
                     </button>
@@ -88,7 +92,7 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
             </div>
 
             {/* Gallery */}
-            <div className="relative w-[90%] max-w-6xl mx-auto">
+            <div className="relative w-[95%] md:w-[90%] max-w-6xl mx-auto">
 
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -97,11 +101,11 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         key={index}
-                        className="grid grid-cols-4 gap-2 h-[450px]"
+                        className="grid grid-cols-2 md:grid-cols-4 gap-2 h-[300px] sm:h-[350px] md:h-[450px]"
                     >
                         {/* Left Large */}
                         <div
-                            className="relative col-span-1 h-full rounded-md overflow-hidden cursor-pointer"
+                            className="relative col-span-1 row-span-2 md:row-span-1 h-full rounded-md overflow-hidden cursor-pointer"
                             onClick={() => openLightbox(group[0], (index + 0) % images.length)}
                         >
                             <Image src={group[0].imageUrl} alt="" fill className="object-cover" />
@@ -116,7 +120,7 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
                         </div>
 
                         {/* Middle Bottom - 2 stacked */}
-                        <div className="col-span-1 flex flex-col gap-2 h-full">
+                        <div className="hidden md:flex col-span-1 flex-col gap-2 h-full">
                             <div
                                 className="relative flex-1 rounded-md overflow-hidden cursor-pointer"
                                 onClick={() => openLightbox(group[2], (index + 2) % images.length)}
@@ -142,7 +146,7 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
                 </AnimatePresence>
 
                 {/* Pagination Dots */}
-                <div className="flex justify-center gap-2 mt-8">
+                <div className="flex justify-center gap-2 mt-6 md:mt-8">
                     {images.map((_, i) => (
                         <div
                             key={i}
@@ -159,13 +163,13 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+                    className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
                     onClick={() => setSelected(null)}
                 >
                     <motion.div
                         initial={{ scale: 0.9 }}
                         animate={{ scale: 1 }}
-                        className="relative w-[85vw] h-[85vh]"
+                        className="relative w-full h-full max-w-[90vw] max-h-[90vh] md:w-[85vw] md:h-[85vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <Image src={selected.imageUrl} alt="" fill className="object-contain" />
@@ -173,29 +177,29 @@ export function ImgGallery({ images }: { images: GalleryImage[] }) {
                         {/* Close Button */}
                         <button
                             onClick={() => setSelected(null)}
-                            className="absolute top-6 right-6 text-white hover:text-red-400 transition-colors"
+                            className="absolute top-2 right-2 md:top-6 md:right-6 text-white hover:text-red-400 transition-colors"
                         >
-                            <X className="w-10 h-10" />
+                            <X className="w-8 h-8 md:w-10 md:h-10" />
                         </button>
 
                         {/* Previous Button */}
                         <button
                             onClick={navigatePrevious}
-                            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+                            className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
                         >
-                            <ChevronLeft className="w-8 h-8 text-white" />
+                            <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-white" />
                         </button>
 
                         {/* Next Button */}
                         <button
                             onClick={navigateNext}
-                            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+                            className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300"
                         >
-                            <ChevronRight className="w-8 h-8 text-white" />
+                            <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-white" />
                         </button>
 
                         {/* Image Counter */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm text-white text-sm">
+                        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs md:text-sm">
                             {selectedIndex + 1} / {images.length}
                         </div>
                     </motion.div>
