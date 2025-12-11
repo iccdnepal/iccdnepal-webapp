@@ -16,8 +16,8 @@ export default async function LegalListPage() {
 
       <div className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white">Legal Documents</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <h1 className="text-4xl lg:text-5xl font-extrabold mb-6 leading-tight text-white md:text-center lg:text-center text-left">Legal Documents</h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-left lg:text-center md:text-center">
             Transparency and accountability guide our operations. Below is a compilation of legal acts along with other laws enacted by the Parliament of Nepal and policies issued by Nepal Rastra Bank .
           </p>
         </div>
