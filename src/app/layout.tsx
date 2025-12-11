@@ -11,7 +11,7 @@ const roboto = Roboto({
 export const metadata: Metadata = {
    title: "ICCD Nepal – International Center for Capacity Development",
   description:
-    "ICCD Nepal offers international training, capacity development programs, professional certifications, career counseling, and global development opportunities.",
+    "Your partner in professional development, offering expert-led training in AML, ESG, ECL, Credit Risk, Customer Service, and more to elevate institutional performance.",
   icons: {
     icon: "/Images/Logo/3.png",
   },

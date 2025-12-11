@@ -42,12 +42,13 @@ export function ImpactNumbers({ metrics }: { metrics: ImpactMetric[] }) {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center lg:justify-center">
+
           {metrics.slice(0, 3).map((stat) => (
             <div 
-              key={stat.id} 
-              className="bg-gradient-to-br from-[#0A2E52]/30 via-[#0A2E52]/20 to-[#0A2E52]/10 rounded-2xl shadow-xl border border-white/10 backdrop-blur-sm p-8 lg:p-10 text-center hover:shadow-2xl hover:scale-105 transition-all duration-300"
-            >
+                key={stat.id} 
+                className="w-full max-w-sm bg-gradient-to-br from-[#0A2E52]/30 via-[#0A2E52]/20 to-[#0A2E52]/10 rounded-2xl shadow-xl border border-white/10 backdrop-blur-sm p-8 lg:p-10 text-center hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              >
               <div className="text-5xl lg:text-6xl font-extrabold mb-4 text-primary">
                 {isVisible ? (
                   <CountUp end={parseInt(stat.value)} suffix={stat.suffix || ""} />

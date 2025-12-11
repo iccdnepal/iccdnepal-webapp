@@ -10,10 +10,28 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 export default function FeaturedProgram({ programs }: { programs: Program[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
-  const [cardPx, setCardPx] = useState(0) // px width of one card
-  const [pagePx, setPagePx] = useState(0) // px width of one page (3 cards)
+  const [cardPx, setCardPx] = useState(0)
+  const [pagePx, setPagePx] = useState(0)
   const [pageIndex, setPageIndex] = useState(0)
-  const visibleCards = 3
+  const [visibleCards, setVisibleCards] = useState(3)
+
+  // Determine visible cards based on screen width
+  useEffect(() => {
+    const updateVisibleCards = () => {
+      const width = window.innerWidth
+      if (width < 768) {
+        setVisibleCards(1) // Mobile: 1 card
+      } else if (width < 1024) {
+        setVisibleCards(2) // Tablet: 2 cards
+      } else {
+        setVisibleCards(3) // Desktop: 3 cards
+      }
+    }
+
+    updateVisibleCards()
+    window.addEventListener('resize', updateVisibleCards)
+    return () => window.removeEventListener('resize', updateVisibleCards)
+  }, [])
 
   // Measure container and compute widths
   useEffect(() => {
@@ -22,27 +40,19 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
       if (!track) return
 
       const style = window.getComputedStyle(track)
-      // read gap (may be like "24px")
       const gapStr = style.gap || style.columnGap || '0px'
       const gap = parseFloat(gapStr) || 0
 
-      // Get available width inside track's parent (the visible viewport)
-      // We will use the parent element that has overflow hidden (containerRef)
       const container = containerRef.current ?? track
       const containerWidth = container.clientWidth
 
-      // total gap width between visibleCards: there are visibleCards-1 gaps
       const totalGaps = gap * (visibleCards - 1)
-
-      // compute card width so that exactly 3 cards fit inside container (no overflow)
       const single = Math.floor((containerWidth - totalGaps) / visibleCards)
-
-      // page width is exactly containerWidth (we scroll by full visible area)
       const page = single * visibleCards + totalGaps
 
       setCardPx(single)
       setPagePx(page)
-      // adjust scroll position if needed (snap to nearest page)
+
       if (track) {
         const currentLeft = track.scrollLeft
         const nearestPage = Math.round(currentLeft / page)
@@ -53,14 +63,12 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
 
     measure()
 
-    // Use ResizeObserver for robust resizing
     let ro: ResizeObserver | undefined
     try {
       ro = new ResizeObserver(measure)
       if (containerRef.current) ro.observe(containerRef.current)
       if (trackRef.current) ro.observe(trackRef.current)
     } catch (e) {
-      // fallback
       window.addEventListener('resize', measure)
     }
 
@@ -72,8 +80,7 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
         window.removeEventListener('resize', measure)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [programs.length])
+  }, [programs.length, visibleCards])
 
   const pagesCount = Math.max(1, Math.ceil(programs.length / visibleCards))
 
@@ -94,18 +101,18 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
   }
 
   return (
-    <section className="py-20 bg-background">
-      <div className="max-w-[80%] mx-auto">
+    <section className="py-12 md:py-16 lg:py-20 bg-background">
+      <div className="w-[90%] md:w-[85%] lg:w-[80%] mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl leading-tight text-white">
-            Our <span className="text-white"> Featured Programs</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight text-white">
+            Our <span className="text-white">Featured Programs</span>
           </h2>
 
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-secondary hover:bg-secondary/90 text-white font-semibold px-8"
+            className="rounded-full bg-secondary hover:bg-secondary/90 text-white font-semibold px-6 md:px-8 text-sm md:text-base"
           >
             <Link href="/programs">
               View All Programs
@@ -114,36 +121,31 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
           </Button>
         </div>
 
-        {/* Slider viewport (overflow hidden) */}
+        {/* Slider viewport */}
         <div
           ref={containerRef}
-          className="py-10 overflow-hidden"
+          className="py-6 md:py-8 lg:py-10 overflow-hidden"
           style={{ width: '100%' }}
         >
-          {/* Track: the scrolling element */}
+          {/* Track */}
           <div
             ref={trackRef}
-            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth touch-pan-x"
+            className="flex items-stretch gap-4 md:gap-6 overflow-x-auto scroll-smooth touch-pan-x"
             style={{
-              // hide native scrollbar visually but keep scroll capability
-              scrollbarWidth: 'none' /* firefox */,
-              msOverflowStyle: 'none' /* IE 10+ */,
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
               scrollSnapType: 'x mandatory',
             }}
-            // optional: pointer events for dragging if you want (kept default)
           >
-            {/* hide scrollbar for webkit browsers */}
             <style>{`
-              /* hide scrollbar for webkit */
               .track-hide-scroll::-webkit-scrollbar { display: none; }
             `}</style>
 
-            {programs.map((program, idx) => {
-              // ensure width for each card is exact px measured
-              // when programs.length < visibleCards, make each fill proportionally
+            {programs.map((program) => {
               const effectiveVisible = Math.min(visibleCards, programs.length)
+              const gapPx = visibleCards === 1 ? 0 : visibleCards === 2 ? 16 : 24
               const widthPx = effectiveVisible < visibleCards
-                ? Math.floor((pagePx - (6 * (effectiveVisible - 1))) / effectiveVisible)
+                ? Math.floor((pagePx - (gapPx * (effectiveVisible - 1))) / effectiveVisible)
                 : cardPx
 
               return (
@@ -163,22 +165,23 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-center gap-4 mt-4">
+        <div className="flex items-center justify-center gap-3 md:gap-4 mt-4">
           <button
             onClick={prev}
-            className="bg-secondary/20 hover:bg-secondary/40 p-3 rounded-full"
+            className="bg-secondary/20 hover:bg-secondary/40 p-2 md:p-3 rounded-full transition-colors"
             aria-label="Previous programs"
           >
-            <ChevronLeft className="w-6 h-6 text-white" />
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </button>
 
           <div className="flex gap-2 items-center">
-            {/* page indicators */}
             {Array.from({ length: pagesCount }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => goToPage(i)}
-                className={`w-2 h-2 rounded-full ${i === pageIndex ? 'bg-secondary' : 'bg-white/30'}`}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  i === pageIndex ? 'bg-secondary' : 'bg-white/30'
+                }`}
                 aria-label={`Go to page ${i + 1}`}
               />
             ))}
@@ -186,10 +189,10 @@ export default function FeaturedProgram({ programs }: { programs: Program[] }) {
 
           <button
             onClick={next}
-            className="bg-secondary/20 hover:bg-secondary/40 p-3 rounded-full"
+            className="bg-secondary/20 hover:bg-secondary/40 p-2 md:p-3 rounded-full transition-colors"
             aria-label="Next programs"
           >
-            <ChevronRight className="w-6 h-6 text-white" />
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </button>
         </div>
       </div>
