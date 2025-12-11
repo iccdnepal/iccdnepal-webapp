@@ -17,8 +17,8 @@ export function ImpactHero() {
             <span className="text-white">Measurable Results</span> That{" "}
             <span className="text-white">Transform Organizations</span>
           </h1>
-          <p className="text-xl text-gray-200 text-pretty leading-relaxed">
-            Driving measurable impact through training that strengthens institutions and elevates performance.
+          <p className="text-xl text-gray-200 text-pretty leading-relaxed max-w-2xl mx-auto">
+            Driving measurable impact through training that strengthens institutions and elevates performance.
           </p>
         </div>
       </div>
