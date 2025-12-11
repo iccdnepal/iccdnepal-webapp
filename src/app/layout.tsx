@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ICCD Nepal – International Center for Capacity Development",
     description:
-      "Advance your career with ICCD Nepal through international training, capacity development, certifications, and professional development programs.",
+      "Your partner in professional development, offering expert-led training in AML, ESG, ECL, Credit Risk, Customer Service, and more to elevate institutional performance.",
     url: "https://www.iccdnepal.com",
     type: "website",
   },

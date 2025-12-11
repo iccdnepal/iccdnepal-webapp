@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, type ComponentType, type SVGProps, type KeyboardEvent, useEffect, lazy, Suspense } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/app-components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/app-components/ui/badge'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
@@ -37,7 +37,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/app-components/ui/card"
-import { CTAStrip } from './cta-strip'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -128,6 +127,15 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
     const [isScrolled, setIsScrolled] = useState(false)
     const [isNavExpanded, setIsNavExpanded] = useState(false)
 
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 1024)
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+    }, [])
+
     // Scroll listener for sticky nav styling
     useEffect(() => {
         const handleScroll = () => {
@@ -174,11 +182,11 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
 
     const onRailKey = (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-            e.preventDefault();
+            e.preventDefault()
             setIndex((index + 1) % programs.length)
         }
         else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-            e.preventDefault();
+            e.preventDefault()
             setIndex((index - 1 + programs.length) % programs.length)
         }
     }
@@ -208,11 +216,11 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                     {/* Background lines */}
                     <div className="absolute bottom-0 left-0 w-full h-px lg:top-auto lg:bottom-10" />
 
-                    <div className="max-w-[90%] mx-auto w-full flex flex-col lg:flex-row justify-between items-center gap-8 py-10">
+                    <div className="max-w-[95%] md:max-w-[90%] mx-auto w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 md:gap-8 py-6 md:py-10">
 
                         {/* LEFT — Title */}
-                        <div className="space-y-4  flex items-center">
-                            <h1 className="text-3xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
+                        <div className="space-y-2 flex items-center w-full lg:w-auto">
+                            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
                                 Our <span className="text-white">Programs</span>
                             </h1>
                         </div>
@@ -256,23 +264,22 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                             </div>
 
                             {/* 
-                            STATE 2: Bookmark/Toggle Bar (Scrolled)
-                            Fixed to top right when scrolled.
+                            STATE 2: Bookmark/Toggle Bar (Scrolled or Mobile)
                        */}
                             <AnimatePresence>
-                                {isScrolled && (
+                                {(isScrolled || isMobile) && (
                                     <motion.div
                                         initial={{ opacity: 0, y: -20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -20 }}
-                                        className="fixed top-6 right-6 lg:right-12 z-50 flex items-center gap-4"
+                                        className="fixed top-4 md:top-6 right-4 md:right-6 lg:right-12 z-50 flex items-center gap-3 md:gap-4"
                                     >
                                         {/* Current Program Label (Optional context) */}
                                         {!isNavExpanded && (
                                             <motion.div
                                                 initial={{ opacity: 0, x: 20 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                className="hidden lg:block px-4 py-2 rounded-full bg-slate-900/80 backdrop-blur border border-white/10 text-sm text-slate-300"
+                                                className="hidden md:block px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-slate-900/80 backdrop-blur border border-white/10 text-xs md:text-sm text-slate-300 max-w-[200px] truncate"
                                             >
                                                 <span className="text-secondary mr-2">Viewing:</span> {current.title}
                                             </motion.div>
@@ -281,9 +288,9 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                         {/* Bookmark Toggle Button */}
                                         <button
                                             onClick={() => setIsNavExpanded(!isNavExpanded)}
-                                            className="h-12 w-12 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
+                                            className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-secondary text-white flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
                                         >
-                                            {isNavExpanded ? <X className="w-5 h-5" /> : <DynamicIcon iconName={current.images.icon} className="w-5 h-5" fallback={iconForProgram(current.category, index)} />}
+                                            {isNavExpanded ? <X className="w-4 h-4 md:w-5 md:h-5" /> : <DynamicIcon iconName={current.images.icon} className="w-4 h-4 md:w-5 md:h-5" fallback={iconForProgram(current.category, index)} />}
                                         </button>
                                     </motion.div>
                                 )}
@@ -291,18 +298,17 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
 
                             {/* 
                             STATE 3: Expanded Overlay List (When Toggled)
-                            This mimics the "original" sticky list but displayed on demand.
                         */}
                             <AnimatePresence>
-                                {isScrolled && isNavExpanded && (
+                                {(isScrolled || isMobile) && isNavExpanded && (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95, x: 20 }}
                                         animate={{ opacity: 1, scale: 1, x: 0 }}
                                         exit={{ opacity: 0, scale: 0.95, x: 20 }}
-                                        className="fixed top-24 right-6 lg:right-12 z-40 max-h-[80vh] overflow-y-auto"
+                                        className="fixed top-16 md:top-20 lg:top-24 right-4 md:right-6 lg:right-12 z-40 max-h-[70vh] md:max-h-[80vh] overflow-y-auto"
                                     >
                                         <div
-                                            className="bg-slate-900/95 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-2xl flex flex-col items-end space-y-2 min-w-[250px]"
+                                            className="bg-slate-900/95 backdrop-blur-md border border-white/10 p-4 md:p-6 rounded-2xl shadow-2xl flex flex-col items-end space-y-2 min-w-[200px] md:min-w-[250px]"
                                             role="tablist"
                                             tabIndex={0}
                                             onKeyDown={onRailKey}
@@ -316,24 +322,24 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                                         role="tab"
                                                         aria-selected={active}
                                                         onClick={() => setIndex(i)}
-                                                        className={`group relative flex items-center justify-between gap-3 w-full transition-all outline-none py-2 px-3 rounded-lg
+                                                        className={`group relative flex items-center justify-between gap-2 md:gap-3 w-full transition-all outline-none py-2 px-2 md:px-3 rounded-lg
                                                         ${active ? 'bg-white/5' : 'hover:bg-white/5'}
                                                     `}
                                                     >
                                                         {/* Program Icon */}
-                                                        <div className={`p-1.5 rounded-lg transition-colors ${active ? 'bg-secondary/20 text-secondary' : 'bg-white/5 text-slate-400'
+                                                        <div className={`p-1 md:p-1.5 rounded-lg transition-colors ${active ? 'bg-secondary/20 text-secondary' : 'bg-white/5 text-slate-400'
                                                             }`}>
-                                                            <DynamicIcon iconName={p.images.icon} className="w-4 h-4" fallback={iconForProgram(p.category, i)} />
+                                                            <DynamicIcon iconName={p.images.icon} className="w-3 h-3 md:w-4 md:h-4" fallback={iconForProgram(p.category, i)} />
                                                         </div>
 
-                                                        <span className={`flex-1 text-right text-sm lg:text-base font-medium transition-colors duration-300
+                                                        <span className={`flex-1 text-right text-xs md:text-sm lg:text-base font-medium transition-colors duration-300
                                                         ${active ? 'text-white' : 'text-slate-300'}
                                                     `}>
                                                             {p.title}
                                                         </span>
 
                                                         {/* Active Pill Indicator */}
-                                                        <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                        <div className="relative flex items-center justify-center w-3 h-3 md:w-4 md:h-4 shrink-0">
                                                             {active && (
                                                                 <motion.div
                                                                     layoutId="active-indicator-overlay"
@@ -341,7 +347,7 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                                                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                                                 />
                                                             )}
-                                                            {active && <div className="absolute w-1.5 h-1.5 bg-white rounded-full z-10" />}
+                                                            {active && <div className="absolute w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full z-10" />}
                                                         </div>
                                                     </button>
                                                 )
@@ -357,7 +363,7 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
 
 
                 {/* MAIN CONTENT - Detail View */}
-                <div className="flex-1 bg-background relative pb-20 mt-2" ref={detailViewRef}>
+                <div className="flex-1 bg-background relative pb-12 md:pb-16 lg:pb-20 mt-2" ref={detailViewRef}>
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                             key={current.id}
@@ -367,26 +373,26 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                             transition={{ duration: 0.3 }}
                             className="min-h-full"
                         >
-                            {/* Original Hero Design */}
-                            <div className="relative w-full h-[300px] lg:h-[350px]">
+                            {/* Hero Section */}
+                            <div className="relative w-full h-[250px] md:h-[300px] lg:h-[350px]">
                                 <div className="absolute inset-0">
                                     <img src={view.image} alt={view.title} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
                                 </div>
-                                <div className="absolute bottom-0 left-0 w-full p-4 lg:p-4">
-                                    <div className="w-[90%] mx-auto">
-                                        <div className="flex flex-wrap gap-3 mb-4">
-                                            <Badge className="bg-secondary text-white hover:bg-secondary/90 rounded-full border-none">
+                                <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 lg:p-4">
+                                    <div className="w-[95%] md:w-[90%] mx-auto">
+                                        <div className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4">
+                                            <Badge className="bg-secondary text-white hover:bg-secondary/90 rounded-full border-none text-xs md:text-sm">
                                                 {view.category}
                                             </Badge>
-                                            <Badge variant="outline" className={`bg-black/20 text-white rounded-full border-white/20 backdrop-blur-sm`}>
+                                            <Badge variant="outline" className={`bg-black/20 text-white rounded-full border-white/20 backdrop-blur-sm text-xs md:text-sm`}>
                                                 {view.level}
                                             </Badge>
                                         </div>
-                                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                                        <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 md:mb-4 leading-tight">
                                             {view.title}
                                         </h1>
-                                        <p className="text-lg text-slate-200 max-w-4xl">
+                                        <p className="text-sm md:text-base lg:text-lg text-slate-200 max-w-4xl">
                                             {view.description}
                                         </p>
                                     </div>
@@ -394,70 +400,70 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                             </div>
 
                             {/* Content Body */}
-                            <div className="max-w-[90%] mx-auto px-6 lg:px-4 py-8">
+                            <div className="max-w-[95%] md:max-w-[90%] mx-auto px-4 md:px-6 lg:px-4 py-6 md:py-8">
                                 {/* Quick Stats Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 p-6 rounded-2xl bg-white/5 border border-white/10">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-8 md:mb-12 p-4 md:p-6 rounded-2xl bg-white/5 border border-white/10">
                                     <div className="space-y-1">
-                                        <div className="flex items-start gap-3">
-                                            <div className="p-2 rounded-full bg-secondary/10 text-secondary">
-                                                <Clock className="w-7 h-7" />
+                                        <div className="flex items-start gap-2 md:gap-3">
+                                            <div className="p-1.5 md:p-2 rounded-full bg-secondary/10 text-secondary">
+                                                <Clock className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                             </div>
                                             <div>
-                                                <div className="text-xs text-slate-400 mb-0.5">Duration</div>
-                                                <div className="font-semibold text-white">{view.duration || 'Flexible'}</div>
+                                                <div className="text-[10px] md:text-xs text-slate-400 mb-0.5">Duration</div>
+                                                <div className="font-semibold text-white text-xs md:text-sm">{view.duration || 'Flexible'}</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <div className="flex items-start gap-3">
-                                            <div className="p-2 rounded-full bg-secondary/10 text-secondary">
-                                                <Users className="w-7 h-7" />
+                                        <div className="flex items-start gap-2 md:gap-3">
+                                            <div className="p-1.5 md:p-2 rounded-full bg-secondary/10 text-secondary">
+                                                <Users className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                             </div>
                                             <div>
-                                                <div className="text-xs text-slate-400 mb-0.5">Max Participants</div>
-                                                <div className="font-semibold text-white">{view.maxParticipants} Max</div>
+                                                <div className="text-[10px] md:text-xs text-slate-400 mb-0.5">Max Participants</div>
+                                                <div className="font-semibold text-white text-xs md:text-sm">{view.maxParticipants} Max</div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <div className="flex items-start gap-3">
-                                            <div className="p-2 rounded-full bg-secondary/10 text-secondary">
-                                                <MapPin className="w-7 h-7" />
+                                        <div className="flex items-start gap-2 md:gap-3">
+                                            <div className="p-1.5 md:p-2 rounded-full bg-secondary/10 text-secondary">
+                                                <MapPin className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                             </div>
                                             <div>
-                                                <div className="text-xs text-slate-400 mb-0.5">Format</div>
-                                                <div className="font-semibold text-white">{view.format}</div>
+                                                <div className="text-[10px] md:text-xs text-slate-400 mb-0.5">Format</div>
+                                                <div className="font-semibold text-white text-xs md:text-sm">{view.format}</div>
                                             </div>
                                         </div>
                                     </div>
                                     {view.certification && (
-                                        <div className="space-y-1">
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 rounded-full bg-secondary/10 text-secondary">
-                                                    <Award className="w-7 h-7" />
+                                        <div className="space-y-1 col-span-2 md:col-span-1">
+                                            <div className="flex items-start gap-2 md:gap-3">
+                                                <div className="p-1.5 md:p-2 rounded-full bg-secondary/10 text-secondary">
+                                                    <Award className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                                 </div>
-                                                <div>
-                                                    <div className="text-xs text-slate-400 mb-0.5">Certification</div>
-                                                    <div className="font-semibold text-white truncate" title={view.certification}>{view.certification}</div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-[10px] md:text-xs text-slate-400 mb-0.5">Certification</div>
+                                                    <div className="font-semibold text-white text-xs md:text-sm truncate" title={view.certification}>{view.certification}</div>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="grid lg:grid-cols-3 gap-8">
+                                <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
                                     {/* Main Content Info */}
-                                    <div className="lg:col-span-2 space-y-8">
+                                    <div className="lg:col-span-2 space-y-6 md:space-y-8">
                                         {/* Long Description */}
                                         <Card className="bg-slate-900/50 border-white/10 rounded-2xl">
                                             <CardHeader>
-                                                <div className="flex items-center gap-3">
-                                                    <BookOpen className="h-6 w-6 text-primary" />
-                                                    <CardTitle className="text-xl text-primary">Program Overview</CardTitle>
+                                                <div className="flex items-center gap-2 md:gap-3">
+                                                    <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                                                    <CardTitle className="text-lg md:text-xl text-primary">Program Overview</CardTitle>
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <p className="text-slate-300 leading-relaxed whitespace-pre-line">
+                                                <p className="text-slate-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
                                                     {view.longDescription}
                                                 </p>
                                             </CardContent>
@@ -467,13 +473,13 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                         {view.keyPoints.length > 0 && view.learningOutcomes.length === 0 && (
                                             <Card className="bg-slate-900/50 border-white/10 rounded-2xl">
                                                 <CardHeader>
-                                                    <CardTitle className="text-xl text-primary">Key Highlights</CardTitle>
+                                                    <CardTitle className="text-lg md:text-xl text-primary">Key Highlights</CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <ul className="space-y-3">
                                                         {view.keyPoints.map((pt, k) => (
-                                                            <li key={k} className="flex gap-3 text-slate-300">
-                                                                <CheckCircle className="w-5 h-5 text-secondary shrink-0" />
+                                                            <li key={k} className="flex gap-2 md:gap-3 text-slate-300 text-sm md:text-base">
+                                                                <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-secondary shrink-0 mt-0.5" />
                                                                 <span>{pt}</span>
                                                             </li>
                                                         ))}
@@ -489,12 +495,12 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                         {view.whoShouldAttend.length > 0 && (
                                             <Card className="bg-slate-900/50 border-white/10 rounded-2xl">
                                                 <CardHeader>
-                                                    <CardTitle className="text-lg text-primary">Who Should Attend</CardTitle>
+                                                    <CardTitle className="text-base md:text-lg text-primary">Who Should Attend</CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <ul className="space-y-2">
                                                         {view.whoShouldAttend.map((role, index) => (
-                                                            <li key={index} className="flex items-center gap-2 text-sm text-slate-300">
+                                                            <li key={index} className="flex items-center gap-2 text-xs md:text-sm text-slate-300">
                                                                 <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
                                                                 <span>{role}</span>
                                                             </li>
@@ -508,13 +514,13 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                                         {view.learningOutcomes.length > 0 && (
                                             <Card className="bg-slate-900/50 border-white/10 rounded-2xl">
                                                 <CardHeader>
-                                                    <CardTitle className="text-lg text-primary">Learning Outcomes</CardTitle>
+                                                    <CardTitle className="text-base md:text-lg text-primary">Learning Outcomes</CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <ul className="space-y-3">
                                                         {view.learningOutcomes.map((outcome, index) => (
-                                                            <li key={index} className="flex items-start gap-2 text-sm text-slate-300">
-                                                                <CheckCircle className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
+                                                            <li key={index} className="flex items-start gap-2 text-xs md:text-sm text-slate-300">
+                                                                <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-secondary mt-0.5 flex-shrink-0" />
                                                                 <span>{outcome}</span>
                                                             </li>
                                                         ))}
@@ -529,7 +535,6 @@ export function ProgramsExplorer({ programs }: { programs: Program[] }) {
                     </AnimatePresence>
                 </div>
             </div>
-            <CTAStrip />
         </>
     )
 }
