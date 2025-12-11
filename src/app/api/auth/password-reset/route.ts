@@ -1,114 +1,122 @@
-import { PrismaClient } from "@prisma/client"
-import { NextResponse } from "next/server"
-import crypto from "crypto"
-import nodemailer from "nodemailer"
-import bcrypt from "bcryptjs"
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-// Email Transporter
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // Gmail App Password
     },
-})
+});
 
+// ============================
+// POST /api/auth/password-reset
+// ============================
 export async function POST(req: Request) {
     try {
-        const { email, type, token, newPassword } = await req.json()
+        const { email, type, token, newPassword } = await req.json();
 
-        // 1. REQUEST RESET
+        // ========================
+        // 1. REQUEST RESET LINK
+        // ========================
         if (type === "request") {
-            const user = await prisma.user.findUnique({ where: { email } })
+            const user = await prisma.user.findUnique({ where: { email } });
 
-            // Security: Don't reveal if user exists
+            // Security best practice: never confirm user existence
             if (!user) {
-                return NextResponse.json({ message: "If that email exists, a reset link has been sent." })
+                return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
             }
 
-            // Generate Token
-            const resetToken = crypto.randomBytes(32).toString("hex")
-            const passwordResetExpires = new Date(Date.now() + 3600000) // 1 hour
+            // 32-byte token → hex string sent to user
+            const rawToken = crypto.randomBytes(32).toString("hex");
 
-            // Hash token for storage
-            const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex")
+            // Hash stored in DB (so attackers can't reuse stolen DB tokens)
+            const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
 
-            // Upsert token for this email
+            const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
+            // STORE or UPDATE token (keyed by email)
             await prisma.passwordResetToken.upsert({
-                where: { email }, // email is unique in your schema
+                where: { email }, // MUST MATCH your model (email UNIQUE)
                 create: {
                     email,
                     token: hashedToken,
-                    expires: passwordResetExpires
+                    expires,
                 },
                 update: {
                     token: hashedToken,
-                    expires: passwordResetExpires
-                }
-            })
+                    expires,
+                },
+            });
 
-            // Send Email
+            // Send mail ONLY if env variables exist
             if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-                const resetUrl = `${process.env.NEXTAUTH_URL}/admin/reset-password?token=${resetToken}&email=${email}`
+                const resetUrl = `${process.env.NEXTAUTH_URL}/admin/reset-password?token=${rawToken}&email=${email}`;
 
                 await transporter.sendMail({
                     from: process.env.EMAIL_USER,
                     to: email,
-                    subject: "Password Reset Request - ICCD Admin",
+                    subject: "Reset Your Password",
                     html: `
-                        <div style="font-family: sans-serif; color: #333;">
-                            <h2>Password Reset Request</h2>
-                            <p>You requested a password reset for your ICCD admin account.</p>
-                            <p>Click the link below to reset your password. This link is valid for 1 hour.</p>
-                            <a href="${resetUrl}" style="background-color: #E21D25; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
-                            <p>If you didn't request this, please ignore this email.</p>
-                        </div>
-                    `,
-                })
+                        <p>You requested a password reset.</p>
+                        <p>Click here to reset your password:</p>
+                        <a href="${resetUrl}" 
+                           style="padding:12px 20px;background:#0A2E52;color:white;border-radius:6px;text-decoration:none;font-weight:600;">
+                           Reset Password
+                        </a>
+                        <p>This link expires in 1 hour.</p>
+                    `
+                });
             }
 
-            return NextResponse.json({ message: "If that email exists, a reset link has been sent." })
+            return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
         }
 
-        // 2. EXECUTE RESET
+        // ========================
+        // 2. RESET PASSWORD
+        // ========================
         if (type === "reset") {
-            if (!token || !newPassword || !email) {
-                return new NextResponse("Missing required fields", { status: 400 })
+            if (!email || !token || !newPassword) {
+                return new NextResponse("Missing fields", { status: 400 });
             }
 
-            const hashedToken = crypto.createHash("sha256").update(token).digest("hex")
+            const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-            const record = await prisma.passwordResetToken.findFirst({
-                where: {
-                    email,
-                    token: hashedToken,
-                    expires: { gt: new Date() }
-                }
-            })
+            const resetDoc = await prisma.passwordResetToken.findUnique({
+                where: { email },
+            });
 
-            if (!record) {
-                return new NextResponse("Invalid or expired token", { status: 400 })
+            if (
+                !resetDoc ||
+                resetDoc.token !== hashedToken ||
+                resetDoc.expires < new Date()
+            ) {
+                return new NextResponse("Invalid or expired token", { status: 400 });
             }
 
-            // Update user password
-            const hashedPassword = await bcrypt.hash(newPassword, 10)
+            // Update password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
             await prisma.user.update({
                 where: { email },
-                data: { password: hashedPassword }
-            })
+                data: { password: hashedPassword },
+            });
 
-            // Clean up token
-            await prisma.passwordResetToken.deleteMany({ where: { email } })
+            // Delete used token
+            await prisma.passwordResetToken.delete({ where: { email } });
 
-            return NextResponse.json({ message: "Password reset successful" })
+            return NextResponse.json({ message: "Password reset successful." });
         }
 
-        return new NextResponse("Invalid request type", { status: 400 })
+        return new NextResponse("Invalid type", { status: 400 });
 
-    } catch (error) {
-        console.error("Password reset error:", error)
-        return new NextResponse("Internal Error", { status: 500 })
+    } catch (err) {
+        console.error("Password reset error:", err);
+        return new NextResponse("Server error", { status: 500 });
     }
 }

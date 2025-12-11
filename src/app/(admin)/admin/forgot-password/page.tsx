@@ -5,13 +5,14 @@ import { Button } from "@/app-components/ui/button"
 import { Input } from "@/app-components/ui/input"
 import { Label } from "@/app-components/ui/label"
 import { Loader2, Mail } from "lucide-react"
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("")
     const [loading, setLoading] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [error, setError] = useState("")
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -35,6 +36,10 @@ export default function ForgotPasswordPage() {
         }
     }
 
+    const handleBackToLogin = () => {
+        router.push('/admin/login')
+    }
+
     if (submitted) {
         return (
             <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -47,8 +52,11 @@ export default function ForgotPasswordPage() {
                         <p className="text-slate-400">
                             If an account exists for {email}, we have sent password reset instructions.
                         </p>
-                        <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-white">
-                            <Link href="/admin/login">Return to Login</Link>
+                        <Button 
+                            onClick={handleBackToLogin}
+                            className="w-full bg-secondary hover:bg-secondary/90 text-white"
+                        >
+                            Return to Login
                         </Button>
                     </div>
                 </div>
@@ -94,9 +102,13 @@ export default function ForgotPasswordPage() {
                     </Button>
 
                     <div className="text-center">
-                        <Link href="/admin/login" className="text-sm text-slate-400 hover:text-white transition-colors">
+                        <button
+                            type="button"
+                            onClick={handleBackToLogin}
+                            className="text-sm text-slate-400 hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+                        >
                             Back to Login
-                        </Link>
+                        </button>
                     </div>
                 </form>
             </div>

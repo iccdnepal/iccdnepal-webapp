@@ -4,15 +4,22 @@ import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { Button } from '@/app-components/ui/button';
 import { Input } from '@/app-components/ui/input';
-import {Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [errorMessage, dispatch, isPending] = useActionState(
         authenticate,
         undefined,
     );
+    const router = useRouter();
+
+    const handleForgotPassword = (e: React.MouseEvent) => {
+        e.preventDefault();
+        console.log('Navigating to forgot password...');
+        router.push('/admin/forgot-password');
+    };
 
     return (
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
@@ -74,11 +81,17 @@ export default function LoginPage() {
                                 className="bg-background"
                             />
                         </div>
+                        
                         <div className="flex items-center justify-between">
-                            <Link href="/admin/forgot-password" className="text-sm text-primary hover:underline">
+                            <button
+                                type="button"
+                                onClick={handleForgotPassword}
+                                className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-none p-0"
+                            >
                                 Forgot Password?
-                            </Link>
+                            </button>
                         </div>
+                        
                         <div
                             className="flex h-8 items-end space-x-1"
                             aria-live="polite"

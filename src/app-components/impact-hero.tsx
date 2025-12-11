@@ -18,7 +18,7 @@ export function ImpactHero() {
             <span className="text-white">Transform Organizations</span>
           </h1>
           <p className="text-xl text-gray-200 text-pretty leading-relaxed">
-            Our programs strengthen governance, reduce risk, enhance customer trust, and build long-term institutional resilience.
+            Driving measurable impact through training that strengthens institutions and elevates performance.
           </p>
         </div>
       </div>
