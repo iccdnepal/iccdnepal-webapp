@@ -81,7 +81,8 @@ export function ContactForm() {
 
   return (
     <section className="relative py-14 md:py-20">
-      <div className="max-w-6xl mx-auto w-[80%] px-4 sm:px-6 lg:px-6">
+      <div className="max-w-6xl mx-auto w-full px-5 sm:px-6 md:px-10">
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -89,13 +90,21 @@ export function ContactForm() {
           transition={{ duration: 0.6 }}
           className="relative rounded-3xl bg-secondary/5 shadow-xl border border-primary/40 p-6 sm:p-4 md:p-10 mx-auto"
         >
-          <div className="grid gap-8 lg:grid-cols-[420px_minmax(0,1fr)]">
+          <div className="grid gap-8 md:items-stretch lg:items-start lg:grid-cols-[420px_minmax(0,1fr)]">
+
             {/* LEFT INFO */}
-            <div className="relative">
-              <div className="relative rounded-2xl bg-primary text-primary-foreground p-7 sm:p-8 md:p-10 shadow-2xl lg:-ml-24 lg:mt-4 lg:mb-2 z-10">
+            <div className="relative h-full">
+              <div
+                className="
+                  relative rounded-2xl bg-primary text-primary-foreground
+                  p-7 sm:p-8 md:p-10 shadow-2xl
+                  md:h-full md:flex md:flex-col md:justify-between
+                  lg:h-auto lg:block lg:-ml-24 lg:mt-4 lg:mb-2 z-10
+                "
+              >
                 <h3 className="text-2xl font-semibold mb-6">Contact Us</h3>
                 <ul className="space-y-6 text-sm leading-6">
-                  <li className="flex gap-3">
+                  <li className="flex gap-3"> 
                     <MapPin className="h-5 w-5 mt-0.5 opacity-90" />
                     <div>
                       <p>Baluwatar-04</p>
@@ -131,7 +140,7 @@ export function ContactForm() {
               </div>
 
               {!isSubmitted ? (
-                <form className="space-y-4 max-w-xl" onSubmit={handleSubmit} noValidate>
+                <form className="space-y-4 w-full max-w-xl mx-auto" onSubmit={handleSubmit} noValidate>
                   <Input placeholder="Your Name *" value={name} onChange={(e) => setName(e.target.value)} className="h-11" />
                   {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
 
@@ -141,7 +150,8 @@ export function ContactForm() {
                   <Input placeholder="Organisation *" value={org} onChange={(e) => setOrg(e.target.value)} className="h-11" />
                   {errors.org && <p className="text-xs text-destructive">{errors.org}</p>}
 
-                  <div className="grid sm:grid-cols-4 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+
                     <Select value={role} onValueChange={setRole}>
                       <SelectTrigger className="h-11">
                         <SelectValue placeholder="Your Role *" />
@@ -205,7 +215,7 @@ export function ContactForm() {
       </div>
 
       {/* Toastify container */}
-      <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} newestOnTop />
+      <ToastContainer toastClassName="!text-sm !px-3" position="top-right" autoClose={4000} hideProgressBar={false} newestOnTop />
     </section>
   )
 }
