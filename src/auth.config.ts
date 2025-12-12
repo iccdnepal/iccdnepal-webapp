@@ -8,18 +8,29 @@ export const authConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isOnAdmin = nextUrl.pathname.startsWith('/admin');
-            const isLoginPage = nextUrl.pathname === '/admin/login';
+
+            // Define auth routes that logged-in users shouldn't access
+            const isAuthRoute =
+                nextUrl.pathname === '/admin/login' ||
+                nextUrl.pathname === '/admin/forgot-password' ||
+                nextUrl.pathname.startsWith('/admin/reset-password');
 
             if (isOnAdmin) {
                 if (isLoggedIn) {
-                    if (isLoginPage) {
-                        // Let NextAuth handle redirect to dashboard
-                        return false;
+                    if (isAuthRoute) {
+                        // Redirect logged-in users to dashboard
+                        return Response.redirect(new URL('/admin', nextUrl));
                     }
                     return true;
                 }
-                if (isLoginPage) return true;
-                return false; // Redirect unauthenticated users to login page
+
+                // Allow unauthenticated access to auth routes
+                if (isAuthRoute) {
+                    return true;
+                }
+
+                // Redirect unauthenticated users to login page
+                return false;
             }
             return true;
         },

@@ -19,73 +19,75 @@ const transporter = nodemailer.createTransport({
 // ============================
 export async function POST(req: Request) {
     try {
-        const { email, type, token, newPassword } = await req.json();
+        const { email, type, otp, newPassword } = await req.json();
 
         // ========================
-        // 1. REQUEST RESET LINK
+        // 1. REQUEST OTP
         // ========================
         if (type === "request") {
             const user = await prisma.user.findUnique({ where: { email } });
 
             // Security best practice: never confirm user existence
             if (!user) {
-                return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
+                return NextResponse.json({ message: "If that email exists, an OTP has been sent." });
             }
 
-            // 32-byte token → hex string sent to user
-            const rawToken = crypto.randomBytes(32).toString("hex");
+            // Generate 6-digit OTP
+            const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            // Hash stored in DB (so attackers can't reuse stolen DB tokens)
-            const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+            // Hash OTP for storage
+            const hashedOtp = crypto.createHash("sha256").update(rawOtp).digest("hex");
 
-            const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+            const expires = new Date(Date.now() + 1000 * 60 * 15); // 15 minutes
 
             // STORE or UPDATE token (keyed by email)
             await prisma.passwordResetToken.upsert({
-                where: { email }, // MUST MATCH your model (email UNIQUE)
+                where: { email },
                 create: {
                     email,
-                    token: hashedToken,
+                    token: hashedOtp,
                     expires,
                 },
                 update: {
-                    token: hashedToken,
+                    token: hashedOtp,
                     expires,
                 },
             });
 
             // Send mail ONLY if env variables exist
             if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-                const resetUrl = `${process.env.NEXTAUTH_URL}/admin/reset-password?token=${rawToken}&email=${email}`;
-
                 await transporter.sendMail({
                     from: process.env.EMAIL_USER,
                     to: email,
-                    subject: "Reset Your Password",
+                    subject: "Password Reset OTP",
                     html: `
-                        <p>You requested a password reset.</p>
-                        <p>Click here to reset your password:</p>
-                        <a href="${resetUrl}" 
-                           style="padding:12px 20px;background:#0A2E52;color:white;border-radius:6px;text-decoration:none;font-weight:600;">
-                           Reset Password
-                        </a>
-                        <p>This link expires in 1 hour.</p>
+                        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
+                            <h2>Password Reset Request</h2>
+                            <p>Your One-Time Password (OTP) for resetting your password is:</p>
+                            <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #f9f9f9; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px;">
+                                ${rawOtp}
+                            </div>
+                            <p>This code expires in 15 minutes.</p>
+                            <p>If you didn't request this, please ignore this email.</p>
+                        </div>
                     `
                 });
+            } else {
+                console.log("DEV MODE OTP:", rawOtp);
             }
 
-            return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
+            return NextResponse.json({ message: "If that email exists, an OTP has been sent." });
         }
 
         // ========================
-        // 2. RESET PASSWORD
+        // 2. VERIFY OTP & RESET
         // ========================
         if (type === "reset") {
-            if (!email || !token || !newPassword) {
+            if (!email || !otp || !newPassword) {
                 return new NextResponse("Missing fields", { status: 400 });
             }
 
-            const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+            const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
             const resetDoc = await prisma.passwordResetToken.findUnique({
                 where: { email },
@@ -93,10 +95,10 @@ export async function POST(req: Request) {
 
             if (
                 !resetDoc ||
-                resetDoc.token !== hashedToken ||
+                resetDoc.token !== hashedOtp ||
                 resetDoc.expires < new Date()
             ) {
-                return new NextResponse("Invalid or expired token", { status: 400 });
+                return new NextResponse("Invalid or expired OTP", { status: 400 });
             }
 
             // Update password
