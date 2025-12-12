@@ -26,6 +26,7 @@ export function LegalItem({ doc }: { doc: LegalDocument }) {
         })
 
         if (!res.ok) {
+            toast.error("Failed to delete document")
             throw new Error('Failed to delete')
         }
 

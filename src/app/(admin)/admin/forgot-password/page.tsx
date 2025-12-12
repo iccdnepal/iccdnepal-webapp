@@ -6,6 +6,7 @@ import { Input } from "@/app-components/ui/input"
 import { Label } from "@/app-components/ui/label"
 import { Loader2, Mail, Lock, KeyRound } from "lucide-react"
 import { useRouter } from 'next/navigation'
+import { toast } from "react-toastify"
 
 export default function ForgotPasswordPage() {
     const [step, setStep] = useState(1) // 1 = Email, 2 = OTP + Password
@@ -32,9 +33,11 @@ export default function ForgotPasswordPage() {
 
             if (!res.ok) throw new Error("Failed to send OTP")
 
+            toast.success("OTP sent to your email!")
             setStep(2)
         } catch (err) {
             setError("Something went wrong. Please try again.")
+            toast.error("Failed to send OTP. Please try again.")
         } finally {
             setLoading(false)
         }
@@ -46,10 +49,12 @@ export default function ForgotPasswordPage() {
 
         if (password !== confirmPassword) {
             setError("Passwords do not match")
+            toast.error("Passwords do not match")
             return
         }
         if (password.length < 6) {
             setError("Password must be at least 6 characters")
+            toast.error("Password must be at least 6 characters")
             return
         }
 
@@ -72,9 +77,11 @@ export default function ForgotPasswordPage() {
             if (!res.ok) throw new Error(data.message || "Reset failed")
 
             // Success! Redirect to login
+            toast.success("Password reset successfully!")
             router.push('/admin/login')
         } catch (err: any) {
             setError(err.message || "Invalid OTP or unexpected error")
+            toast.error(err.message || "Reset failed")
         } finally {
             setLoading(false)
         }

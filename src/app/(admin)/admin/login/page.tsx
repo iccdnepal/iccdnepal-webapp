@@ -1,12 +1,13 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { Button } from '@/app-components/ui/button';
 import { Input } from '@/app-components/ui/input';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function LoginPage() {
     const [errorMessage, dispatch, isPending] = useActionState(
@@ -14,6 +15,12 @@ export default function LoginPage() {
         undefined,
     );
     const router = useRouter();
+
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage);
+        }
+    }, [errorMessage]);
 
     const handleForgotPassword = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -81,7 +88,7 @@ export default function LoginPage() {
                                 className="bg-background"
                             />
                         </div>
-                        
+
                         <div className="flex items-center justify-between">
                             <button
                                 type="button"
@@ -91,7 +98,7 @@ export default function LoginPage() {
                                 Forgot Password?
                             </button>
                         </div>
-                        
+
                         <div
                             className="flex h-8 items-end space-x-1"
                             aria-live="polite"

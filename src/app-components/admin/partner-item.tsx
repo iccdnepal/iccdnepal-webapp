@@ -24,6 +24,7 @@ export function PartnerItem({ partner }: { partner: Partner }) {
         })
 
         if (!res.ok) {
+            toast.error("Failed to delete partner")
             throw new Error('Failed to delete')
         }
 

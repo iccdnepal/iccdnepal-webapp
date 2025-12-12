@@ -23,6 +23,7 @@ export function ProgramItem({ program }: { program: Program }) {
         })
 
         if (!res.ok) {
+            toast.error("Failed to delete program")
             throw new Error('Failed to delete')
         }
 

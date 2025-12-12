@@ -22,6 +22,7 @@ export function TestimonialItem({ t }: { t: Testimonial }) {
         })
 
         if (!res.ok) {
+            toast.error("Failed to delete testimonial")
             throw new Error('Failed to delete')
         }
 

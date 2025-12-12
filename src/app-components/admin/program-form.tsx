@@ -8,6 +8,7 @@ import { Textarea } from "@/app-components/ui/textarea"
 import { Label } from "@/app-components/ui/label"
 import { Loader2, Plus, X } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app-components/ui/select"
+import { toast } from "react-toastify"
 
 // Define a type that matches the Prisma model roughly
 type ProgramData = {
@@ -97,11 +98,12 @@ export function ProgramForm({ initialData }: { initialData?: ProgramData }) {
 
             if (!res.ok) throw new Error("Failed to save")
 
+            toast.success(initialData ? "Program updated successfully" : "Program created successfully")
             router.push("/admin/programs")
             router.refresh()
         } catch (error) {
             console.error(error)
-            alert("Something went wrong")
+            toast.error("Failed to save program")
         } finally {
             setLoading(false)
         }

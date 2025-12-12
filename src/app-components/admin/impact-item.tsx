@@ -26,6 +26,7 @@ export function ImpactItem({ metric }: { metric: ImpactMetric }) {
         })
 
         if (!res.ok) {
+            toast.error("Failed to delete metric")
             throw new Error('Failed to delete')
         }
 

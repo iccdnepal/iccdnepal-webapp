@@ -7,6 +7,7 @@ import { Input } from "@/app-components/ui/input"
 import { Textarea } from "@/app-components/ui/textarea"
 import { Label } from "@/app-components/ui/label"
 import { Loader2 } from "lucide-react"
+import { toast } from "react-toastify"
 
 type TestimonialData = {
     id?: string
@@ -49,11 +50,12 @@ export function TestimonialForm({ initialData }: { initialData?: TestimonialData
 
             if (!res.ok) throw new Error("Failed to save")
 
+            toast.success(initialData ? "Testimonial updated successfully" : "Testimonial created successfully")
             router.push("/admin/testimonials")
             router.refresh()
         } catch (error) {
             console.error(error)
-            alert("Something went wrong")
+            toast.error("Failed to save testimonial")
         } finally {
             setLoading(false)
         }
