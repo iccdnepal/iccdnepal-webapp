@@ -1,4 +1,4 @@
--- CreateTable
+﻿-- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -7,6 +7,17 @@ CREATE TABLE "User" (
     "role" TEXT NOT NULL DEFAULT 'admin',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PasswordResetToken" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PasswordResetToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -20,7 +31,8 @@ CREATE TABLE "Program" (
     "durationDays" INTEGER NOT NULL,
     "level" TEXT NOT NULL,
     "maxParticipants" INTEGER NOT NULL,
-    "certification" TEXT NOT NULL,
+    "format" TEXT NOT NULL DEFAULT 'On-site',
+    "certification" TEXT,
     "audience" TEXT[],
     "instructorName" TEXT NOT NULL,
     "instructorExpertise" TEXT[],
@@ -97,7 +109,7 @@ CREATE TABLE "ContactRequest" (
 CREATE TABLE "Partner" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "logo" TEXT NOT NULL,
+    "logo" TEXT,
     "website" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -124,8 +136,9 @@ CREATE TABLE "ImpactMetric" (
 CREATE TABLE "LegalDocument" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "titleNe" TEXT,
     "slug" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
+    "fileUrl" TEXT NOT NULL,
     "type" TEXT NOT NULL DEFAULT 'policy',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -133,11 +146,27 @@ CREATE TABLE "LegalDocument" (
     CONSTRAINT "LegalDocument_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "GalleryImage" (
+    "id" TEXT NOT NULL,
+    "alt" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
+    "order" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "GalleryImage_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetToken_email_key" ON "PasswordResetToken"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Program_slug_key" ON "Program"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "LegalDocument_slug_key" ON "LegalDocument"("slug");
+

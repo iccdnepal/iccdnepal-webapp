@@ -57,5 +57,6 @@ verify-*.ts
 # prisma studio
 .prisma
 
-# seed
+#seed
 seed-admin.ts
+

@@ -20,8 +20,18 @@ export async function POST(req: Request) {
             return new NextResponse("Slug already exists", { status: 400 })
         }
 
+        // Get the maximum order value and set new program's order to max + 1
+        const maxOrderProgram = await prisma.program.findFirst({
+            orderBy: { order: 'desc' },
+            select: { order: true }
+        })
+        const newOrder = (maxOrderProgram?.order ?? -1) + 1
+
         const program = await prisma.program.create({
-            data,
+            data: {
+                ...data,
+                order: newOrder
+            },
         })
 
         // Revalidate admin and public pages

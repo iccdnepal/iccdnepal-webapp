@@ -46,6 +46,7 @@ model Program {
   imageIcon        String?
   language         String
   longDescription  String
+  order            Int      @default(0)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }

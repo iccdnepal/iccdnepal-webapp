@@ -43,7 +43,7 @@ export function toSlug(input: string): string {
 
 export async function getPrograms(): Promise<Program[]> {
   const programs = await prisma.program.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { order: 'asc' }
   })
 
   return programs.map(p => ({

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
 import { Button } from "@/app-components/ui/button"
 import { Plus } from "lucide-react"
-import { ProgramItem } from "@/app-components/admin/program-item"
+import { ProgramListSortable } from "@/app-components/admin/program-list-sortable"
 
 const prisma = new PrismaClient()
 
@@ -12,10 +12,15 @@ export const revalidate = 0
 
 export default async function ProgramsPage() {
     const programs = await prisma.program.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: { order: 'asc' },
+        select: {
+            id: true,
+            title: true,
+            category: true,
+            level: true,
+            slug: true,
+        }
     })
-
-
 
     return (
         <div className="space-y-6">
@@ -28,28 +33,7 @@ export default async function ProgramsPage() {
                 </Link>
             </div>
 
-            <div className="bg-card shadow-sm rounded-lg border border-border overflow-hidden">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-muted/50 text-muted-foreground uppercase">
-                        <tr>
-                            <th className="px-6 py-3">Title</th>
-                            <th className="px-6 py-3">Category</th>
-                            <th className="px-6 py-3">Level</th>
-                            <th className="px-6 py-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {programs.map((program) => (
-                            <ProgramItem key={program.id} program={program} />
-                        ))}
-                        {programs.length === 0 && (
-                            <tr>
-                                <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No programs found.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <ProgramListSortable initialPrograms={programs} />
         </div>
     )
 }

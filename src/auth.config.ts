@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig = {
@@ -19,7 +20,7 @@ export const authConfig = {
                 if (isLoggedIn) {
                     if (isAuthRoute) {
                         // Redirect logged-in users to dashboard
-                        return Response.redirect(new URL('/admin', nextUrl));
+                        return NextResponse.redirect(new URL('/admin', nextUrl));
                     }
                     return true;
                 }
