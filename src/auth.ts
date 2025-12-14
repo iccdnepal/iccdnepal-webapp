@@ -30,7 +30,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                     const { email, password } = parsedCredentials.data;
 
                     // Security: Restrict login to specific admin email
-                    const allowedEmails = ['admin@iccdnepal.com'];
+                    const allowedEmails = ['admin@iccdnepal.com', 'info@iccdnepal.com'];
                     if (!allowedEmails.includes(email)) {
                         console.log('Access denied: Unauthorized email');
                         return null;

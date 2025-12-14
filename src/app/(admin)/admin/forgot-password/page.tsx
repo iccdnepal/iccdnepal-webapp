@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="bg-slate-950/50 border-white/10 text-white placeholder:text-slate-500 focus:ring-primary/50"
-                                placeholder="admin@iccdnepal.com"
+                                placeholder="Enter Your Email"
                             />
                         </div>
 

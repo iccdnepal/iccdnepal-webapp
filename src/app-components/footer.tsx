@@ -132,7 +132,7 @@ export function Footer() {
                   <br />
                   <Mail className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
                   <a href="mailto:iccdnepal@gmail.com" className="text-primary-foreground/80 hover:text-secondary transition-colors">
-                    iccdnepal@gmail.com
+                    info@iccdnepal.com
                   </a>
                 </div>
               </div>
